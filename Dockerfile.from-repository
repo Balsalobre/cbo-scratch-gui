@@ -1,0 +1,14 @@
+FROM node:alpine as builder
+LABEL MAINTAINER="carlosocb@gmail.com"
+
+RUN apk add --update --no-cache git
+RUN git clone https://github.com/Balsalobre/cbo-scratch-gui.git
+RUN cd scratch-gui \
+  && npm install \
+  && npm run build
+
+FROM nginx:alpine
+COPY --from=builder /scratch-gui/build /usr/share/nginx/html
+
+# launch docker container
+# docker run -d -p 8080:80 --name scratch playniuniu/scratch-gui

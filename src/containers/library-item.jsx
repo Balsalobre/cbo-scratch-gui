@@ -33,6 +33,7 @@ class LibraryItem extends React.PureComponent {
         this.handleMouseLeave(id);
     }
     handleClick (e) {
+        console.log('ADD ELEMENT EVENT > ', e);
         if (!this.props.disabled) {
             this.props.onSelect(this.props.id);
         }

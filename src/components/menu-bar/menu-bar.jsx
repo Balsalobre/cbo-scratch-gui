@@ -614,7 +614,7 @@ class MenuBar extends React.Component {
                             </div>
                         )}
                     </div>
-                    {this.props.canEditTitle ? (
+                    { this.props.isShowingOLE && this.props.canEditTitle ? (
                         <div className={classNames(styles.menuBarItem, styles.growable)}>
                             <MenuBarItemTooltip
                                 enable
@@ -634,59 +634,66 @@ class MenuBar extends React.Component {
                             username={this.props.authorUsername}
                         />
                     ) : null)}
-                    <div className={classNames(styles.menuBarItem)}>
-                        {this.props.canShare ? (
-                            (this.props.isShowingProject || this.props.isUpdating) && (
-                                <ProjectWatcher onDoneUpdating={this.props.onSeeCommunity}>
-                                    {
-                                        waitForUpdate => (
-                                            <ShareButton
-                                                className={styles.menuBarButton}
-                                                isShared={this.props.isShared}
-                                                /* eslint-disable react/jsx-no-bind */
-                                                onClick={() => {
-                                                    this.handleClickShare(waitForUpdate);
-                                                }}
+                    { this.props.isShowingOLE && (
+                        <div className={classNames(styles.menuBarItem)}>
+                            {this.props.canShare ? (
+                                (this.props.isShowingProject || this.props.isUpdating) && (
+                                    <ProjectWatcher onDoneUpdating={this.props.onSeeCommunity}>
+                                        {
+                                            waitForUpdate => (
+                                                <ShareButton
+                                                    className={styles.menuBarButton}
+                                                    isShared={this.props.isShared}
+                                                    /* eslint-disable react/jsx-no-bind */
+                                                    onClick={() => {
+                                                        this.handleClickShare(waitForUpdate);
+                                                    }}
                                                 /* eslint-enable react/jsx-no-bind */
-                                            />
-                                        )
-                                    }
-                                </ProjectWatcher>
-                            )
-                        ) : (
-                            this.props.showComingSoon ? (
-                                <MenuBarItemTooltip id="share-button">
-                                    <ShareButton className={styles.menuBarButton} />
+                                                />
+                                            )
+                                        }
+                                    </ProjectWatcher>
+                                )
+                            ) : (
+                                this.props.showComingSoon ? (
+                                    <MenuBarItemTooltip id="share-button">
+                                        <ShareButton className={styles.menuBarButton} />
+                                    </MenuBarItemTooltip>
+                                ) : []
+                            )}
+                            {this.props.canRemix ? remixButton : []}
+                        </div>)}
+
+                    { this.props.isShowingOLE && (
+                        <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
+                            {this.props.enableCommunity ? (
+                                (this.props.isShowingProject || this.props.isUpdating) && (
+                                    <ProjectWatcher onDoneUpdating={this.props.onSeeCommunity}>
+                                        {
+                                            waitForUpdate => (
+                                                <CommunityButton
+                                                    className={styles.menuBarButton}
+                                                    /* eslint-disable react/jsx-no-bind */
+                                                    onClick={() => {
+                                                        this.handleClickSeeCommunity(waitForUpdate);
+                                                    }}
+                                                /* eslint-enable react/jsx-no-bind */
+                                                />
+                                            )
+                                        }
+                                    </ProjectWatcher>
+                                )
+                            ) : (this.props.showComingSoon ? (
+                                <MenuBarItemTooltip id="community-button">
+                                    <CommunityButton className={styles.menuBarButton} />
                                 </MenuBarItemTooltip>
-                            ) : []
-                        )}
-                        {this.props.canRemix ? remixButton : []}
-                    </div>
-                    <div className={classNames(styles.menuBarItem, styles.communityButtonWrapper)}>
-                        {this.props.enableCommunity ? (
-                            (this.props.isShowingProject || this.props.isUpdating) && (
-                                <ProjectWatcher onDoneUpdating={this.props.onSeeCommunity}>
-                                    {
-                                        waitForUpdate => (
-                                            <CommunityButton
-                                                className={styles.menuBarButton}
-                                                /* eslint-disable react/jsx-no-bind */
-                                                onClick={() => {
-                                                    this.handleClickSeeCommunity(waitForUpdate);
-                                                }}
-                                                /* eslint-enable react/jsx-no-bind */
-                                            />
-                                        )
-                                    }
-                                </ProjectWatcher>
-                            )
-                        ) : (this.props.showComingSoon ? (
-                            <MenuBarItemTooltip id="community-button">
-                                <CommunityButton className={styles.menuBarButton} />
-                            </MenuBarItemTooltip>
-                        ) : [])}
-                    </div>
-                    <Divider className={classNames(styles.divider)} />
+                            ) : [])}
+                        </div>
+                    )}
+                    { this.props.isShowingOLE && (
+                        <Divider className={classNames(styles.divider)} />
+                    )}
+
                     <div className={styles.fileGroup}>
                         <div
                             aria-label={this.props.intl.formatMessage(ariaMessages.tutorials)}
@@ -706,91 +713,19 @@ class MenuBar extends React.Component {
 
                 {/* show the proper UI in the account menu, given whether the user is
                 logged in, and whether a session is available to log in with */}
-                <div className={styles.accountInfoGroup}>
-                    <div className={styles.menuBarItem}>
-                        {this.props.canSave && (
-                            <SaveStatus />
-                        )}
-                    </div>
-                    {this.props.sessionExists ? (
-                        this.props.username ? (
+
+                {this.props.isShowingOLE && (
+                    <div className={styles.accountInfoGroup}>
+                        <div className={styles.menuBarItem}>
+                            {this.props.canSave && (
+                                <SaveStatus />
+                            )}
+                        </div>
+                        {this.props.sessionExists ? (
+                            this.props.username ? (
                             // ************ user is logged in ************
-                            <React.Fragment>
-                                <a href="/mystuff/">
-                                    <div
-                                        className={classNames(
-                                            styles.menuBarItem,
-                                            styles.hoverable,
-                                            styles.mystuffButton
-                                        )}
-                                    >
-                                        <img
-                                            className={styles.mystuffIcon}
-                                            src={mystuffIcon}
-                                        />
-                                    </div>
-                                </a>
-                                <AccountNav
-                                    className={classNames(
-                                        styles.menuBarItem,
-                                        styles.hoverable,
-                                        {[styles.active]: this.props.accountMenuOpen}
-                                    )}
-                                    isOpen={this.props.accountMenuOpen}
-                                    isRtl={this.props.isRtl}
-                                    menuBarMenuClassName={classNames(styles.menuBarMenu)}
-                                    onClick={this.props.onClickAccount}
-                                    onClose={this.props.onRequestCloseAccount}
-                                    onLogOut={this.props.onLogOut}
-                                />
-                            </React.Fragment>
-                        ) : (
-                            // ********* user not logged in, but a session exists
-                            // ********* so they can choose to log in
-                            <React.Fragment>
-                                <div
-                                    className={classNames(
-                                        styles.menuBarItem,
-                                        styles.hoverable
-                                    )}
-                                    key="join"
-                                    onMouseUp={this.props.onOpenRegistration}
-                                >
-                                    <FormattedMessage
-                                        defaultMessage="Join Scratch"
-                                        description="Link for creating a Scratch account"
-                                        id="gui.menuBar.joinScratch"
-                                    />
-                                </div>
-                                <div
-                                    className={classNames(
-                                        styles.menuBarItem,
-                                        styles.hoverable
-                                    )}
-                                    key="login"
-                                    onMouseUp={this.props.onClickLogin}
-                                >
-                                    <FormattedMessage
-                                        defaultMessage="Sign in"
-                                        description="Link for signing in to your Scratch account"
-                                        id="gui.menuBar.signIn"
-                                    />
-                                    <LoginDropdown
-                                        className={classNames(styles.menuBarMenu)}
-                                        isOpen={this.props.loginMenuOpen}
-                                        isRtl={this.props.isRtl}
-                                        renderLogin={this.props.renderLogin}
-                                        onClose={this.props.onRequestCloseLogin}
-                                    />
-                                </div>
-                            </React.Fragment>
-                        )
-                    ) : (
-                        // ******** no login session is available, so don't show login stuff
-                        <React.Fragment>
-                            {this.props.showComingSoon ? (
                                 <React.Fragment>
-                                    <MenuBarItemTooltip id="mystuff">
+                                    <a href="/mystuff/">
                                         <div
                                             className={classNames(
                                                 styles.menuBarItem,
@@ -803,36 +738,111 @@ class MenuBar extends React.Component {
                                                 src={mystuffIcon}
                                             />
                                         </div>
-                                    </MenuBarItemTooltip>
-                                    <MenuBarItemTooltip
-                                        id="account-nav"
-                                        place={this.props.isRtl ? 'right' : 'left'}
-                                    >
-                                        <div
-                                            className={classNames(
-                                                styles.menuBarItem,
-                                                styles.hoverable,
-                                                styles.accountNavMenu
-                                            )}
-                                        >
-                                            <img
-                                                className={styles.profileIcon}
-                                                src={profileIcon}
-                                            />
-                                            <span>
-                                                {'scratch-cat'}
-                                            </span>
-                                            <img
-                                                className={styles.dropdownCaretIcon}
-                                                src={dropdownCaret}
-                                            />
-                                        </div>
-                                    </MenuBarItemTooltip>
+                                    </a>
+                                    <AccountNav
+                                        className={classNames(
+                                            styles.menuBarItem,
+                                            styles.hoverable,
+                                            {[styles.active]: this.props.accountMenuOpen}
+                                        )}
+                                        isOpen={this.props.accountMenuOpen}
+                                        isRtl={this.props.isRtl}
+                                        menuBarMenuClassName={classNames(styles.menuBarMenu)}
+                                        onClick={this.props.onClickAccount}
+                                        onClose={this.props.onRequestCloseAccount}
+                                        onLogOut={this.props.onLogOut}
+                                    />
                                 </React.Fragment>
-                            ) : []}
-                        </React.Fragment>
-                    )}
-                </div>
+                            ) : (
+                            // ********* user not logged in, but a session exists
+                            // ********* so they can choose to log in
+                                <React.Fragment>
+                                    <div
+                                        className={classNames(
+                                            styles.menuBarItem,
+                                            styles.hoverable
+                                        )}
+                                        key="join"
+                                        onMouseUp={this.props.onOpenRegistration}
+                                    >
+                                        <FormattedMessage
+                                            defaultMessage="Join Scratch"
+                                            description="Link for creating a Scratch account"
+                                            id="gui.menuBar.joinScratch"
+                                        />
+                                    </div>
+                                    <div
+                                        className={classNames(
+                                            styles.menuBarItem,
+                                            styles.hoverable
+                                        )}
+                                        key="login"
+                                        onMouseUp={this.props.onClickLogin}
+                                    >
+                                        <FormattedMessage
+                                            defaultMessage="Sign in"
+                                            description="Link for signing in to your Scratch account"
+                                            id="gui.menuBar.signIn"
+                                        />
+                                        <LoginDropdown
+                                            className={classNames(styles.menuBarMenu)}
+                                            isOpen={this.props.loginMenuOpen}
+                                            isRtl={this.props.isRtl}
+                                            renderLogin={this.props.renderLogin}
+                                            onClose={this.props.onRequestCloseLogin}
+                                        />
+                                    </div>
+                                </React.Fragment>
+                            )
+                        ) : (
+                        // ******** no login session is available, so don't show login stuff
+                            <React.Fragment>
+                                {this.props.showComingSoon ? (
+                                    <React.Fragment>
+                                        <MenuBarItemTooltip id="mystuff">
+                                            <div
+                                                className={classNames(
+                                                    styles.menuBarItem,
+                                                    styles.hoverable,
+                                                    styles.mystuffButton
+                                                )}
+                                            >
+                                                <img
+                                                    className={styles.mystuffIcon}
+                                                    src={mystuffIcon}
+                                                />
+                                            </div>
+                                        </MenuBarItemTooltip>
+                                        <MenuBarItemTooltip
+                                            id="account-nav"
+                                            place={this.props.isRtl ? 'right' : 'left'}
+                                        >
+                                            <div
+                                                className={classNames(
+                                                    styles.menuBarItem,
+                                                    styles.hoverable,
+                                                    styles.accountNavMenu
+                                                )}
+                                            >
+                                                <img
+                                                    className={styles.profileIcon}
+                                                    src={profileIcon}
+                                                />
+                                                <span>
+                                                    {'scratch-cat'}
+                                                </span>
+                                                <img
+                                                    className={styles.dropdownCaretIcon}
+                                                    src={dropdownCaret}
+                                                />
+                                            </div>
+                                        </MenuBarItemTooltip>
+                                    </React.Fragment>
+                                ) : []}
+                            </React.Fragment>
+                        )}
+                    </div>
+                )}
 
                 {aboutButton}
             </Box>
@@ -865,6 +875,7 @@ MenuBar.propTypes = {
     intl: intlShape,
     isRtl: PropTypes.bool,
     isShared: PropTypes.bool,
+    isShowingOLE: PropTypes.bool,
     isShowingProject: PropTypes.bool,
     isTotallyNormal: PropTypes.bool,
     isUpdating: PropTypes.bool,
